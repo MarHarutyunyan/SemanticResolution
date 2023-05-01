@@ -7,8 +7,8 @@ const S = ["6V4", "5V4", "4V1", "~1V~2", "3V~6", "~4", "2V~5V~3"]
 // const S = ["6", "~6"]
 // const S = ["~1V~2V~3", "1", "2", "3"]
 
-
 const P = ["1", "2", "3", "4", "5", "6"]
+const result = []
 
 const getNegativeDisjuncts = (arrOfDisjuncts) =>
   arrOfDisjuncts.filter((disjunct) => !disjunct.includes(negationSign))
@@ -50,6 +50,7 @@ const disjunctionFn = (
     ? newNegDisjunct
     : newPosDisjunct
 }
+const resolutionString = (d1, d2, r) => ` ${d1}V${d2}=${r} `
 
 const getResolvent = (positiveDisjunct, negativeDisjunct, maxPositiveLiteral) =>
   isEmptyDisjunct(positiveDisjunct, negativeDisjunct)
@@ -70,9 +71,15 @@ const calcResolventsFn1 = (positiveDisjuncts, negativeDisjuncts) => {
         )
 
         if (areEqual(maxPositiveLiteral, lastLitWithoutNegSign)) {
-          resolvents.push(
-            getResolvent(positiveDisjunct, negativeDisjunct, maxPositiveLiteral)
+          const resolvent = getResolvent(
+            positiveDisjunct,
+            negativeDisjunct,
+            maxPositiveLiteral
           )
+          result.push(
+            resolutionString(positiveDisjunct, negativeDisjunct, resolvent)
+          )
+          resolvents.push(resolvent)
         }
       }
     }
@@ -110,9 +117,15 @@ const calcResolventsFn2 = (positiveDisjuncts, negativeDisjuncts) => {
           areEqual(maxPositiveLiteral, negLiteral)
         )
       ) {
-        resolvents.push(
-          getResolvent(positiveDisjunct, negativeDisjunct, maxPositiveLiteral)
+        const resolvent = getResolvent(
+          positiveDisjunct,
+          negativeDisjunct,
+          maxPositiveLiteral
         )
+        result.push(
+          resolutionString(positiveDisjunct, negativeDisjunct, resolvent)
+        )
+        resolvents.push(resolvent)
       }
     }
     negativeDisjuncts.forEach(__calcResolvents)
@@ -151,10 +164,9 @@ const SemanticResolution = () => {
         _semanticResolution(0, j + 1)
       }
     }
-    return `Done`
+    return `Done ${result}`
   }
   return _semanticResolution(0, 1)
 }
 
-const semResolutionResult = SemanticResolution()
-console.log(semResolutionResult)
+console.log(SemanticResolution())
